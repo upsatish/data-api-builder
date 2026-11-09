@@ -221,6 +221,7 @@ namespace Azure.DataApiBuilder.Service
                     ILoggerFactory loggerFactory = GetLoggerFactoryForLogLevel(Startup.MinimumLogLevel, stdio: runMcpStdio);
                     ILogger<Startup> startupLogger = loggerFactory.CreateLogger<Startup>();
                     DisableHttpsRedirectionIfNeeded(args);
+                    ConfigureAzureFunctionsCustomHandlerIfNeeded(webBuilder);
                     webBuilder.UseStartup(builder => new Startup(builder.Configuration, startupLogger));
                 });
         }
@@ -502,6 +503,25 @@ namespace Azure.DataApiBuilder.Service
             }
 
             IsHttpsRedirectionDisabled = false;
+        }
+
+        /// <summary>
+        /// When DAB is launched by the Azure Functions host as a custom handler
+        /// (FUNCTIONS_CUSTOMHANDLER_PORT is set), bind Kestrel to the port assigned by the host
+        /// and disable HTTPS redirection, because the host forwards requests over plain HTTP on
+        /// loopback after the Function App front end has terminated TLS.
+        /// </summary>
+        /// <param name="webBuilder">The web host builder to configure.</param>
+        private static void ConfigureAzureFunctionsCustomHandlerIfNeeded(IWebHostBuilder webBuilder)
+        {
+            if (!AzureFunctionsCustomHandlerHelper.TryGetCustomHandlerUrl(out string url))
+            {
+                return;
+            }
+
+            Console.WriteLine($"Azure Functions custom handler detected. Listening on {url}.");
+            webBuilder.UseUrls(url);
+            IsHttpsRedirectionDisabled = true;
         }
 
         // This is used for testing purposes only. The test web server takes in a

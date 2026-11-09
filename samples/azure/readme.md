@@ -5,3 +5,4 @@ Use the provided `azure-deploy.sh` script to deploy Data API builder in an Azure
 Use the provided `azure-container-apps-deploy.sh` script to deploy Data API builder in an Azure Container Apps as described in [Running Data API Builder in Azure](https://learn.microsoft.com/azure/data-api-builder/running-in-azure)
 
 Make sure to have a valid `dab-config.json` file in the same directory as the script.
+To host Data API builder in an Azure Function App, see the [Azure Functions sample](../azure-functions/readme.md).
