@@ -1,0 +1,21 @@
+{
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "default": "Information"
+    }
+  },
+  "customHandler": {
+    "description": {
+      "defaultExecutablePath": "engine/Azure.DataApiBuilder.Service",
+      "workingDirectory": "",
+      "arguments": [ "--ConfigFileName", "dab-config.json" ]
+    },
+    "enableForwardingHttpRequest": true
+  },
+  "extensions": {
+    "http": {
+      "routePrefix": ""
+    }
+  }
+}

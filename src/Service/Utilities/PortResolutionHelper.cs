@@ -13,7 +13,8 @@ namespace Azure.DataApiBuilder.Service.Utilities
         /// <summary>
         /// Resolves the internal port used by the application based on environment variables and URL bindings.
         /// </summary>
-        /// <remarks>This method determines the port by checking the <c>ASPNETCORE_URLS</c> environment
+        /// <remarks>When running as an Azure Functions custom handler, the port in <c>FUNCTIONS_CUSTOMHANDLER_PORT</c>
+        /// takes precedence. Otherwise, this method determines the port by checking the <c>ASPNETCORE_URLS</c> environment
         /// variable for URL bindings. If a valid port is found in the URLs, it is returned. If no port is specified,
         /// the method checks the <c>DEFAULT_PORT</c> environment variable for a fallback port. If neither is set, the
         /// default port of 5000 is returned.</remarks>
@@ -21,6 +22,13 @@ namespace Azure.DataApiBuilder.Service.Utilities
         /// <c>DEFAULT_PORT</c>, or 5000 if no port is configured.</returns>
         public static int ResolveInternalPort()
         {
+            // When running as an Azure Functions custom handler, Kestrel is bound to the
+            // port assigned by the Functions host, which overrides ASPNETCORE_URLS.
+            if (AzureFunctionsCustomHandlerHelper.TryGetCustomHandlerPort(out int customHandlerPort))
+            {
+                return customHandlerPort;
+            }
+
             string? urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
             int? httpsPort = null;
 

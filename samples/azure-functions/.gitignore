@@ -1,0 +1,5 @@
+engine/
+dist/
+local.settings.json
+.env
+log.txt
